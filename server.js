@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const bookRoutes = require('./routes/bookRoutes');
+const authorRoutes = require('./routes/authorRoutes');
 const { swaggerUi, swaggerSpec } = require('./swagger');
 
 dotenv.config();
@@ -14,7 +15,10 @@ app.use(express.json());
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
+app.use('/api/authors', authorRoutes);
 app.use('/api/books', bookRoutes);
+
+
 
 //mongodb connection
 mongoose.connect(process.env.MONGODB_URL)

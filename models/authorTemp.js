@@ -8,7 +8,23 @@ const authorSchema = new mongoose.Schema({
   deathYear: {
     type: Number,
   },
-}, { timestamps: true });
+}, { 
+  timestamps: true,
+  toJSON: {
+    transform: function (doc, ret) {
+      delete ret.createdAt;
+      delete ret.updatedAt;
+      return ret;
+    }
+  },
+  toObject: {
+    transform: function (doc, ret) {
+      delete ret.createdAt;
+      delete ret.updatedAt;
+      return ret;
+    }
+  }
+});
 
 const Author = mongoose.model('Author', authorSchema);
 

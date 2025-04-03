@@ -4,8 +4,8 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const bookRoutes = require('./routes/bookRoutes');
 const authorRoutes = require('./routes/authorRoutes');
-const { swaggerUi, swaggerSpec } = require('./swagger');//integration of swagger
-
+const { swaggerUi, swaggerSpec } = require('./swagger');
+const config = require('./config');
 dotenv.config();
 
 const app = express();
@@ -24,8 +24,24 @@ app.use('/api/books', bookRoutes);
 mongoose.connect(process.env.MONGODB_URL)
   .then(() => {
     console.log('Connected to MongoDB');
-    app.listen(process.env.PORT || 3000, () =>
-      console.log(`Server running on port ${process.env.PORT || 3000}`)
-    );
+    app.listen(config.PORT, '0.0.0.0', () => {
+      console.log(`Server running on port ${config.PORT}`);
+    });
   })
-  .catch(err => console.error('MongoDB connection error:', err));
+  .catch(err => {
+    console.error('MongoDB connection error:', err);
+    process.exit(1);
+  });
+
+app.use((err, req, res, next) => {
+  console.error('Unhandled Error:', err);
+  res.status(500).send('Something went wrong!');
+});
+
+process.on('SIGINT', () => {
+  console.log('Closing server...');
+  mongoose.connection.close(() => {
+    console.log('MongoDB connection closed.');
+    process.exit(0);
+  });
+});

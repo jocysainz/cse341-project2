@@ -6,7 +6,7 @@ const getAuthors = async (req, res) => {
     const authors = await Author.find();
     res.status(200).json(authors);
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching authors', error });
+    res.status(500).json({ message: 'Error fetching authors', error: error.message });
   }
 };
 
@@ -19,11 +19,16 @@ const createAuthor = async (req, res) => {
       return res.status(400).json({ message: 'Place of birth is required' });
     }
 
+    //validate 'deathYear' if it's a number
+    if (deathYear && typeof deathYear !== 'number') {
+      return res.status(400).json({ message: 'Death year must be a number' });
+    }
+
     const newAuthor = new Author({ birthPlace, deathYear });
     await newAuthor.save();
     res.status(201).json(newAuthor);
   } catch (error) {
-    res.status(500).json({ message: 'Error creating author', error });
+    res.status(500).json({ message: 'Error creating author', error: error.message });
   }
 };
 
@@ -35,6 +40,11 @@ const updateAuthor = async (req, res) => {
 
     if (!birthPlace) {
       return res.status(400).json({ message: 'Place of birth is required to update' });
+    }
+
+    //validate 'deathYear'
+    if (deathYear && typeof deathYear !== 'number') {
+      return res.status(400).json({ message: 'Death year must be a number' });
     }
 
     const author = await Author.findByIdAndUpdate(
@@ -49,7 +59,7 @@ const updateAuthor = async (req, res) => {
 
     res.status(200).json(author);
   } catch (error) {
-    res.status(500).json({ message: 'Error updating author', error });
+    res.status(500).json({ message: 'Error updating author', error: error.message });
   }
 };
 
@@ -65,7 +75,7 @@ const deleteAuthor = async (req, res) => {
 
     res.status(200).json({ message: 'Author deleted successfully' });
   } catch (error) {
-    res.status(500).json({ message: 'Error deleting author', error });
+    res.status(500).json({ message: 'Error deleting author', error: error.message });
   }
 };
 

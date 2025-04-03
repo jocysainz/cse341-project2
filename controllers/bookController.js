@@ -6,7 +6,7 @@ const getBooks = async (req, res) => {
     const books = await Book.find();
     res.status(200).json(books);
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching books', error });
+    res.status(500).json({ message: 'Error fetching books', error: error.message });
   }
 };
 
@@ -19,11 +19,21 @@ const createBook = async (req, res) => {
       return res.status(400).json({ message: 'Title and Author are required' });
     }
 
+    //validate 'pages'
+    if (pages && typeof pages !== 'number') {
+      return res.status(400).json({ message: 'Pages must be a number' });
+    }
+
+    //validate 'publishedYear'
+    if (publishedYear && typeof publishedYear !== 'number') {
+      return res.status(400).json({ message: 'Published year must be a number' });
+    }
+
     const newBook = new Book({ title, author, pages, publishedYear });
     await newBook.save();
     res.status(201).json(newBook);
   } catch (error) {
-    res.status(500).json({ message: 'Error creating book', error });
+    res.status(500).json({ message: 'Error creating book', error: error.message });
   }
 };
 
@@ -32,6 +42,21 @@ const updateBook = async (req, res) => {
   try {
     const { id } = req.params;
     const { title, author, pages, publishedYear } = req.body;
+
+    //validate that 'title' and 'author' are provided
+    if (!title || !author) {
+      return res.status(400).json({ message: 'Title and Author are required to update' });
+    }
+
+    //validate 'pages'
+    if (pages && typeof pages !== 'number') {
+      return res.status(400).json({ message: 'Pages must be a number' });
+    }
+
+    //validate 'publishedYear'
+    if (publishedYear && typeof publishedYear !== 'number') {
+      return res.status(400).json({ message: 'Published year must be a number' });
+    }
 
     const book = await Book.findByIdAndUpdate(
       id,
@@ -45,7 +70,7 @@ const updateBook = async (req, res) => {
 
     res.status(200).json(book);
   } catch (error) {
-    res.status(500).json({ message: 'Error updating book', error });
+    res.status(500).json({ message: 'Error updating book', error: error.message });
   }
 };
 
@@ -61,7 +86,7 @@ const deleteBook = async (req, res) => {
 
     res.status(200).json({ message: 'Book deleted successfully' });
   } catch (error) {
-    res.status(500).json({ message: 'Error deleting book', error });
+    res.status(500).json({ message: 'Error deleting book', error: error.message });
   }
 };
 

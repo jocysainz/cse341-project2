@@ -13,6 +13,10 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+app.get('/', (req, res) => {
+  res.send('Welcome to the API!');
+});
+
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec)); //integration of swagger
 
 app.use('/api/authors', authorRoutes);
@@ -21,7 +25,7 @@ app.use('/api/books', bookRoutes);
 
 
 //mongodb connection
-mongoose.connect(process.env.MONGODB_URL)
+mongoose.connect(config.MONGODB_URL)
   .then(() => {
     console.log('Connected to MongoDB');
     app.listen(config.PORT, '0.0.0.0', () => {

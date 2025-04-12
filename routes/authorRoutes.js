@@ -3,8 +3,8 @@ const router = express.Router();
 const {
   getAuthors,
   createAuthor,
-  updateAuthor,
-  deleteAuthor,
+updateAuthor,
+deleteAuthor,
 } = require('../controllers/authorController');
 
 /**
@@ -14,7 +14,13 @@ const {
  *     summary: Get all authors
  *     responses:
  *       200:
- *         description: Returns a list of authors
+ *         description: Returns a list of authors.
+ */
+router.get('/', getAuthors);
+
+/**
+ * @swagger
+ * /api/authors:
  *   post:
  *     summary: Add a new author
  *     requestBody:
@@ -34,7 +40,6 @@ const {
  *       201:
  *         description: Author created
  */
-router.get('/', getAuthors);
 router.post('/', createAuthor);
 
 /**
@@ -62,6 +67,12 @@ router.post('/', createAuthor);
  *     responses:
  *       200:
  *         description: Author updated
+ */
+router.put('/:id', updateAuthor);
+
+/**
+ * @swagger
+ * /api/authors/{id}:
  *   delete:
  *     summary: Delete an author
  *     parameters:
@@ -74,7 +85,6 @@ router.post('/', createAuthor);
  *       200:
  *         description: Author deleted
  */
-router.put('/:id', updateAuthor);
 router.delete('/:id', deleteAuthor);
 
 module.exports = router;

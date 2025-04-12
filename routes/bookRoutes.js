@@ -1,23 +1,32 @@
 const express = require('express');
 const router = express.Router();
-const {
-  getBooks,
-  createBook,
-  updateBook,
-  deleteBook,
-} = require('../controllers/bookController');
+const { getBooks, createBook, updateBook, deleteBook } = require('../controllers/bookController');
+
+function ensureAuthenticated(req, res, next) {
+  if (req.isAuthenticated && req.isAuthenticated()) {
+    return next();
+  }
+  res.status(401).json({ message: 'Authentication required' });
+}
 
 /**
  * @swagger
  * /api/books:
  *   get:
- *     summary: Get all books
+ *     summary: Get all books.
  *     responses:
  *       200:
- *         description: Returns a list of books
- *
+ *         description: Returns a list of books.
+ */
+router.get('/', getBooks);
+
+/**
+ * @swagger
+ * /api/books:
  *   post:
- *     summary: Create a new book
+ *     summary: Create a new book (protected).
+ *     security:
+ *       - GitHubAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -38,17 +47,17 @@ const {
  *                 type: number
  *     responses:
  *       201:
- *         description: Book created
+ *         description: Book created.
  */
-
-router.get('/', getBooks);
-router.post('/', createBook);
+router.post('/', ensureAuthenticated, createBook);
 
 /**
  * @swagger
  * /api/books/{id}:
  *   put:
- *     summary: Update a book
+ *     summary: Update a book (protected).
+ *     security:
+ *       - GitHubAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -72,10 +81,17 @@ router.post('/', createBook);
  *                 type: number
  *     responses:
  *       200:
- *         description: Book updated
- *
+ *         description: Book updated.
+ */
+router.put('/:id', ensureAuthenticated, updateBook);
+
+/**
+ * @swagger
+ * /api/books/{id}:
  *   delete:
- *     summary: Delete a book
+ *     summary: Delete a book (protected).
+ *     security:
+ *       - GitHubAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -84,10 +100,8 @@ router.post('/', createBook);
  *           type: string
  *     responses:
  *       200:
- *         description: Book deleted
+ *         description: Book deleted.
  */
-
-router.put('/:id', updateBook);
-router.delete('/:id', deleteBook);
+router.delete('/:id', ensureAuthenticated, deleteBook);
 
 module.exports = router;
